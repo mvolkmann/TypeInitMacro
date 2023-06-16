@@ -1,8 +1,12 @@
+import Foundation
 import TypeInitMacro
 
-let a = 17
-let b = 25
-
-let (result, code) = #stringify(a + b)
-
-print("The value \(result) was produced by the code \"\(code)\"")
+@TypeInit
+// struct Book {
+class Book {
+    var id: Int
+    var title: String
+    var subtitle: String
+    var description: String
+    var author: String
+}

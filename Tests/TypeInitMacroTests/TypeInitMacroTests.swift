@@ -1,33 +1,79 @@
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
 import TypeInitMacroMacros
+import XCTest
 
 let testMacros: [String: Macro.Type] = [
-    "stringify": StringifyMacro.self,
+    "TypeInit": TypeInitMacro.self,
 ]
 
 final class TypeInitMacroTests: XCTestCase {
-    func testMacro() {
+    func testOnClass() {
         assertMacroExpansion(
             """
-            #stringify(a + b)
+            @TypeInit
+            class Book {
+                var id: Int
+                var title: String
+                var subtitle: String
+                var description: String
+                var author: String
+            }
             """,
-            expandedSource: """
-            (a + b, "a + b")
+            expandedSource:
+            """
+
+            class Book {
+                var id: Int
+                var title: String
+                var subtitle: String
+                var description: String
+                var author: String
+                init(id: Int, title: String, subtitle: String, description: String, author: String) {
+                    self.id = id
+                    self.title = title
+                    self.subtitle = subtitle
+                    self.description = description
+                    self.author = author
+                }
+            }
             """,
             macros: testMacros
         )
     }
 
-    func testMacroWithStringLiteral() {
+    func testOnStruct() {
         assertMacroExpansion(
-            #"""
-            #stringify("Hello, \(name)")
-            """#,
-            expandedSource: #"""
-            ("Hello, \(name)", #""Hello, \(name)""#)
-            """#,
+            """
+            @TypeInit
+            struct Book {
+                var id: Int
+                var title: String
+                var subtitle: String
+                var description: String
+                var author: String
+            }
+            """,
+            // TODO: Why is there a blank line at the beginning?
+            // TODO: Is that the line of the macro invocation?
+            expandedSource:
+            """
+
+            struct Book {
+                var id: Int
+                var title: String
+                var subtitle: String
+                var description: String
+                var author: String
+                init(id: Int, title: String, subtitle: String, description: String, author: String) {
+                    self.id = id
+                    self.title = title
+                    self.subtitle = subtitle
+                    self.description = description
+                    self.author = author
+                }
+            }
+            """,
             macros: testMacros
         )
     }
