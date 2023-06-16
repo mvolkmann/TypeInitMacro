@@ -77,15 +77,20 @@ public struct TypeInitMacro: MemberMacro {
 
         // Get all the variable declarations in the type.
         let members = typeDecl!.memberBlock.members
-        let variableDecl = members
+        var variableDecls = members
             .compactMap { $0.decl.as(VariableDeclSyntax.self) }
 
+        // Remove computed properties.
+        variableDecls = variableDecls.filter { decl in
+            decl.bindings.first?.accessor == nil
+        }
+
         // Get an array containing the variable names.
-        let variablesName = variableDecl
+        let variablesName = variableDecls
             .compactMap { $0.bindings.first?.pattern }
 
         // Get an array containing the variable types.
-        let variablesType = variableDecl
+        let variablesType = variableDecls
             .compactMap { $0.bindings.first?.typeAnnotation?.type }
 
         // Generate an initializer.

@@ -70,15 +70,20 @@ final class TypeInitMacroTests: XCTestCase {
     }
 
     func testOnStruct() {
+        // Note that the computed property "description" will not have
+        // a corresponding parameter in the generated initializer.
         assertMacroExpansion(
             """
             @TypeInit
-            struct Book {
+            struct Book: CustomStringConvertible {
                 var id: Int
                 var title: String
                 var subtitle: String
-                var description: String
                 var author: String
+
+                var description: String {
+                    "\\(title): \\(description)"
+                }
             }
             """,
             // TODO: Why is there a blank line at the beginning?
@@ -86,17 +91,19 @@ final class TypeInitMacroTests: XCTestCase {
             expandedSource:
             """
 
-            struct Book {
+            struct Book: CustomStringConvertible {
                 var id: Int
                 var title: String
                 var subtitle: String
-                var description: String
                 var author: String
-                init(id: Int, title: String, subtitle: String, description: String, author: String) {
+
+                var description: String {
+                    "\\(title): \\(description)"
+                }
+                init(id: Int, title: String, subtitle: String, author: String) {
                     self.id = id
                     self.title = title
                     self.subtitle = subtitle
-                    self.description = description
                     self.author = author
                 }
             }
