@@ -42,6 +42,33 @@ final class TypeInitMacroTests: XCTestCase {
         )
     }
 
+    func testOnEnum() {
+        assertMacroExpansion(
+            """
+            @TypeInit
+            enum Color {
+                case red, green, blue
+            }
+            """,
+            expandedSource:
+            """
+
+            enum Color {
+                case red, green, blue
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "@TypeInit can only be applied to a class or struct",
+                    line: 1,
+                    column: 1
+                )
+
+            ],
+            macros: testMacros
+        )
+    }
+
     func testOnStruct() {
         assertMacroExpansion(
             """
