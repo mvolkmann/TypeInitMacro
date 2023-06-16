@@ -111,4 +111,39 @@ final class TypeInitMacroTests: XCTestCase {
             macros: testMacros
         )
     }
+
+    func testOnStruct2() {
+        // Note that the computed property "description" will not have
+        // a corresponding parameter in the generated initializer.
+        assertMacroExpansion(
+            """
+            @TypeInit
+            struct Dog: CustomStringConvertible {
+                var name: String
+                var breed: String
+
+                var description: String {
+                    "\\(name) is a \\(breed)"
+                }
+            }
+            """,
+            expandedSource:
+            """
+
+            struct Dog: CustomStringConvertible {
+                var name: String
+                var breed: String
+
+                var description: String {
+                    "\\(name) is a \\(breed)"
+                }
+                init(name: String, breed: String) {
+                    self.name = name
+                    self.breed = breed
+                }
+            }
+            """,
+            macros: testMacros
+        )
+    }
 }
